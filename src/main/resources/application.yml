@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: agriconnect-capteurreleve
+
+server:
+  port: 10007
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  api-docs:
+    path: /api/swagger
+
+# Activation des endpoints pour le monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: env,health,
+          info,metrics,
+          loggers,mappings, prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+
+# Configuration du log.
+logging:
+  level:
+    org.springframework.web: INFO # Choix du niveau de log affich�

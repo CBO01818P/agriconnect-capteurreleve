@@ -35,4 +35,6 @@ public class Capteur implements Serializable {
 
     private int intervalle;
 
+    List<Releve> releves;
+
 }
