@@ -3,14 +3,13 @@ package ag.capteurreleve.metier;
 import ag.capteurreleve.entities.ClientCapteur;
 import ag.capteurreleve.entities.ClientReleve;
 import ag.capteurreleve.transientObj.Capteur;
-import ag.capteurreleve.transientObj.CapteurWithReleve;
 
 import ag.capteurreleve.transientObj.Releve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,25 +29,28 @@ public class CapteurReleveServiceImpl implements CapteurReleveService {
 
     // On va interroger successivement les 2 micro-services Capteur et Releve
     @Override
-    public CapteurWithReleve getCapteurWithReleve(Long idCapteur) {
-        logger.info("On a 1 demande");
-        logger.info("On envoie la demande au service capteur");
-
+    public Capteur getCapteurWithReleve(Long idCapteur) {
         try {
             // On récupère 1 objet capteur
             Capteur c = this.clientCapteur.findById(idCapteur);
 
-            List<Releve> rlv = this.clientReleve.getReleve(c.getId());
+            logger.info("On a récupéré le capteur : {}", c.getId());
 
-            CapteurWithReleve cwr = new CapteurWithReleve();
-            // On forge la réponse
-            for (Releve r : rlv) {
-                cwr.addReleve(r);
+            //Iterable<Releve> rlv = this.clientReleve.getReleves(c.getId());
+
+            List<Releve> rlv = this.clientReleve.getReleves(c.getId());
+            if (rlv != null) {
+                List<Releve> releveList = new ArrayList<>(rlv);
+                logger.info("Releves pour le capteur {}: {}", c.getId(), releveList);
+            } else {
+                logger.info("Aucun releve trouvé pour le capteur {}", c.getId());
             }
 
-            return cwr;
+            c.setReleves(rlv);
+
+            return c;
         } catch (feign.FeignException feignException) {
-            return new CapteurWithReleve();
+            return new Capteur();
         }
 
 
